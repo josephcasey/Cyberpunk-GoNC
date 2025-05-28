@@ -1,0 +1,74 @@
+{
+  "Watson": {
+    "id": "watson",
+    "color": "red",
+    "adjacent": ["westbrook", "city_center"],
+    "rewards": {
+      "creds": 1,
+      "contraband": 1,
+      "street_cred": 0
+    },
+    "points_of_interest": ["Fixer"],
+    "flavor": "A bustling fixer-controlled district key to early expansion."
+  },
+  "Westbrook": {
+    "id": "westbrook",
+    "color": "orange",
+    "adjacent": ["watson", "city_center", "heywood", "santo_domingo"],
+    "rewards": {
+      "creds": 1,
+      "contraband": 1,
+      "street_cred": 1
+    },
+    "points_of_interest": ["Data Fortress"],
+    "flavor": "An affluent area with deep tech infrastructure."
+  },
+  "City Center": {
+    "id": "city_center",
+    "color": "yellow",
+    "adjacent": ["watson", "westbrook", "heywood"],
+    "rewards": {
+      "creds": 2,
+      "contraband": 0,
+      "street_cred": 1
+    },
+    "points_of_interest": ["Business"],
+    "flavor": "Corporate stronghold with underground opportunities."
+  },
+  "Heywood": {
+    "id": "heywood",
+    "color": "teal",
+    "adjacent": ["westbrook", "city_center", "pacifica", "santo_domingo"],
+    "rewards": {
+      "creds": 1,
+      "contraband": 1,
+      "street_cred": 1
+    },
+    "points_of_interest": ["Data Fortress"],
+    "flavor": "Street-savvy and hotly contested with tech access."
+  },
+  "Pacifica": {
+    "id": "pacifica",
+    "color": "pink",
+    "adjacent": ["heywood", "santo_domingo"],
+    "rewards": {
+      "creds": 0,
+      "contraband": 2,
+      "street_cred": 1
+    },
+    "points_of_interest": ["Business"],
+    "flavor": "A volatile zone that pays off for daring gangs."
+  },
+  "Santo Domingo": {
+    "id": "santo_domingo",
+    "color": "blue",
+    "adjacent": ["westbrook", "heywood", "pacifica"],
+    "rewards": {
+      "creds": 1,
+      "contraband": 0,
+      "street_cred": 2
+    },
+    "points_of_interest": ["Fixer"],
+    "flavor": "Power grid hub turned fixer paradise."
+  }
+}
