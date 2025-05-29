@@ -1,0 +1,76 @@
+[
+  {
+    "id": "basic_solo",
+    "name": "Solo",
+    "class": "solo",
+    "edgerunner": false,
+    "movement_type": "solo",
+    "recruited_by": "reclaim",
+    "health": 1,
+    "special_ability": null
+  },
+  {
+    "id": "basic_techie",
+    "name": "Techie",
+    "class": "techie",
+    "edgerunner": false,
+    "movement_type": "techie",
+    "recruited_by": "reclaim",
+    "health": 1,
+    "special_ability": "Recruits 1 Drone during Reclaim"
+  },
+  {
+    "id": "basic_netrunner",
+    "name": "Netrunner",
+    "class": "netrunner",
+    "edgerunner": false,
+    "movement_type": "netrun",
+    "recruited_by": "reclaim",
+    "health": 1,
+    "special_ability": null
+  },
+  {
+    "id": "drone",
+    "name": "Drone",
+    "class": "drone",
+    "edgerunner": false,
+    "movement_type": "techie",
+    "must_end_with_friendly": true,
+    "recruited_by": "paired_with_techie_during_reclaim_or_via_special_effect",
+    "health": 1,
+    "special_ability": "Adds strength to friendly units in combat if co-located"
+  },
+  {
+    "id": "edgerunner_solo",
+    "name": "Edgerunner Solo",
+    "class": "solo",
+    "edgerunner": true,
+    "movement_type": "solo",
+    "recruited_by": "techie_and_fixer",
+    "health": 1,
+    "special_ability": "+1 to combat strength when involved in a fight",
+    "reclaimable": true
+  },
+  {
+    "id": "edgerunner_netrunner",
+    "name": "Edgerunner Netrunner",
+    "class": "netrunner",
+    "edgerunner": true,
+    "movement_type": "netrun",
+    "recruited_by": "techie_and_fixer",
+    "health": 1,
+    "special_ability": "Allows reroll of failed Netwatch die in Netrun attempts",
+    "reclaimable": true
+  },
+  {
+    "id": "edgerunner_techie",
+    "name": "Edgerunner Techie",
+    "class": "techie",
+    "edgerunner": true,
+    "movement_type": "techie",
+    "recruited_by": "techie_and_fixer",
+    "health": 1,
+    "special_ability": "Comes with 1 additional Drone upon recruitment",
+    "reclaimable": true
+  }
+]
