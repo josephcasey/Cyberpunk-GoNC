@@ -1,7 +1,4 @@
-import json
-
-# Define the complete disc_logic data including the wild disc
-disc_logic = [
+[
     {
         "disc_type": "solo",
         "moves_units": "solo",
