@@ -1,0 +1,83 @@
+{
+  "Maelstrom": {
+    "id": "maelstrom",
+    "starting_district": "watson",
+    "ability_title": "Well-Armed",
+    "passive_ability": "Look at 1 extra Combat card when Upgrading. You still keep a single card.",
+    "special_rule": "Each time you initiate a Firefight or Upgrade, increase your Rage track by 1. When an end game condition is triggered, gain bonus resources as indicated by your Rage track."
+  },
+  "Tyger Claws": {
+    "id": "tyger_claws",
+    "starting_district": "westbrook",
+    "ability_title": "Revenge",
+    "passive_ability": "When you lose a basic unit in a Firefight, choose an involved Opponent to keep that unit near their reserve as a Revenge token.",
+    "special_rule": "When initiating a Firefight, retrieve all Revenge tokens from involved opponents. Add +1 strength during COMPARE per token. Gain 2 Cred if an opposing unit is lost. During RECLAIM, you may recruit Revenge tokens if short on units."
+  },
+  "Scavengers": {
+    "id": "scavengers",
+    "ability_title": "Hidden in Plain Sight",
+    "passive_ability": "When you hire an Edgerunner or buy a Vehicle, you may place them in any District of your choice.",
+    "special_rule": "When seizing an Opportunity, reveal a Scavenger Opportunity card and apply its effect to every other player, then remove it from the game."
+  },
+  "The Mox": {
+    "id": "the_mox",
+    "starting_district": "watson",
+    "ability_title": "Improving Lizzie’s Bar",
+    "passive_ability": "When performing a Build Hideout action, place the token on a dashboard slot to unlock the corresponding effect.",
+    "unlocks": {
+      "Hardcore BD": "Gain 1 Street Cred after a Firefight you’re involved in.",
+      "Fresh Meat": "Recruit 2 extra units during your RECLAIM.",
+      "Preem Iron": "Add +1 during COMPARE in Firefights you didn’t initiate."
+    }
+  },
+  "Voodoo Boys": {
+    "id": "voodoo_boys",
+    "starting_district": "pacifica",
+    "ability_title": "Netwatch Countermeasures",
+    "passive_ability": "Once per Netrun, you may reroll both dice if you fail the NetWatch roll.",
+    "special_rule": "If you initiated a Firefight and a friendly basic Netrunner is in that District, add +1 during the COMPARE step."
+  },
+  "Aldecaldos": {
+    "id": "aldecaldos",
+    "starting_district": "badlands",
+    "ability_title": "Clan Family",
+    "passive_ability": "Gain rewards during RECLAIM based on how many non-Drone units you have in play.",
+    "reclaim_rewards": {
+      "1–3 units": "Gain 1 Cred",
+      "4–6 units": "Gain 1 Cred and 1 Street Cred",
+      "7+ units": "Gain 1 Cred, 1 Contraband, 1 Street Cred"
+    },
+    "special_rule": "When a basic unit would be killed in a Firefight you didn’t initiate, you may convert it instead of losing it."
+  },
+  "Animals": {
+    "id": "animals",
+    "starting_district": "pacifica",
+    "ability_title": "Bodyguard Side Gig",
+    "passive_ability": "Gain 1 Cred when using your yellow Action disc.",
+    "special_rule": "When you seize an Opportunity, you may flip over your Stash token if it’s empty. If the Stash token is filled, add +2 during COMPARE in your next Firefight, then flip it back."
+  },
+  "Wraiths": {
+    "id": "wraiths",
+    "starting_district": "badlands",
+    "ability_title": "Raids",
+    "passive_ability": "If you have at least 1 unit left in a district after a Firefight you initiated, place a RAIDED token on that district’s reward.",
+    "special_rule": "Opponents do not claim rewards from districts with a RAIDED token. During RECLAIM, you gain all rewards from RAIDED districts and may recover tokens."
+  },
+  "6th Street": {
+    "id": "sixth_street",
+    "starting_district": "santo_domingo",
+    "ability_title": "Patriotic Patrol",
+    "passive_ability": "At the end of your ACTIVATE, you may place Patrol tokens in any number of districts with your Presence (1 per district).",
+    "special_rule": "At the end of a Firefight in a Patrol district, return the token and gain 1 Cred for each opposing basic unit lost — even if you weren’t involved."
+  },
+  "Valentinos": {
+    "id": "valentinos",
+    "starting_district": "heywood",
+    "ability_title": "Community Support",
+    "passive_ability": "If you control a Business, at the end of your ACTIVATE (before market refill), you may sacrifice a Drone to:",
+    "options": [
+      "Store an Opportunity card from the market on your dashboard (if empty)",
+      "Seize your Personal Opportunity by paying its cost"
+    ]
+  }
+}
