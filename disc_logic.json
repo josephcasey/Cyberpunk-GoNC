@@ -1,0 +1,53 @@
+import json
+
+# Define the complete disc_logic data including the wild disc
+disc_logic = [
+    {
+        "disc_type": "solo",
+        "moves_units": "solo",
+        "bonus_action": "firefight",
+        "action_limit": 1
+    },
+    {
+        "disc_type": "techie",
+        "moves_units": "techie_and_drones",
+        "bonus_action": "seize_opportunity",
+        "condition": "control_business_poi"
+    },
+    {
+        "disc_type": "netrun",
+        "moves_units": "netrunner",
+        "bonus_action": "netrun",
+        "condition": "in_data_fortress"
+    },
+    {
+        "disc_type": "upgrade",
+        "moves_units": None,
+        "bonus_action": "gain_upgrade",
+        "rules": {
+            "draw": 2,
+            "keep": 1
+        }
+    },
+    {
+        "disc_type": "build",
+        "moves_units": None,
+        "bonus_action": "build_hideout",
+        "rules": {
+            "restriction": "no existing Hideout",
+            "cost": "hideout_cost"
+        }
+    },
+    {
+        "disc_type": "wild",
+        "copies_from": "any previously used disc",
+        "description": "When played, choose one of your previously used discs. Treat this Wild disc as that disc and perform one of its actions."
+    }
+]
+
+# Save to a JSON file
+output_path = "/mnt/data/disc_logic.json"
+with open(output_path, "w") as f:
+    json.dump(disc_logic, f, indent=2)
+
+output_path
