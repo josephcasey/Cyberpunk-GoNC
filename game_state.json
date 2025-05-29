@@ -1,0 +1,121 @@
+{
+  "round": 1,
+  "phase": "action",
+  "districts": {
+    "Watson": {
+      "units": {
+        "maelstrom": [
+          "basic_solo",
+          "basic_techie",
+          "basic_netrunner",
+          "drone"
+        ]
+      },
+      "hideouts": ["maelstrom"],
+      "presence": ["maelstrom"],
+      "dominant": "maelstrom"
+    },
+    "Westbrook": {
+      "units": {
+        "tyger_claws": [
+          "basic_solo",
+          "basic_techie",
+          "basic_netrunner",
+          "drone"
+        ]
+      },
+      "hideouts": ["tyger_claws"],
+      "presence": ["tyger_claws"],
+      "dominant": "tyger_claws"
+    },
+    "Pacifica": {
+      "units": {
+        "voodoo_boys": [
+          "basic_solo",
+          "basic_techie",
+          "basic_netrunner",
+          "drone"
+        ]
+      },
+      "hideouts": ["voodoo_boys"],
+      "presence": ["voodoo_boys"],
+      "dominant": "voodoo_boys"
+    },
+    "City Center": {
+      "units": {},
+      "hideouts": [],
+      "presence": [],
+      "dominant": null
+    },
+    "Santo Domingo": {
+      "units": {},
+      "hideouts": [],
+      "presence": [],
+      "dominant": null
+    }
+  },
+  "gangs": {
+    "tyger_claws": {
+      "resources": {
+        "creds": 1,
+        "contraband": 2,
+        "street_cred": 0
+      },
+      "hideouts": ["Westbrook"],
+      "units_available": {
+        "basic_solo": 2,
+        "basic_techie": 2,
+        "basic_netrunner": 2,
+        "drone": 3
+      },
+      "units_reclaim_pool": [],
+      "action_discs_available": ["solo", "techie", "netrun", "wild"],
+      "action_discs_used": [],
+      "edgerunners_owned": [],
+      "upgrades": [],
+      "agenda": null
+    },
+    "voodoo_boys": {
+      "resources": {
+        "creds": 1,
+        "contraband": 2,
+        "street_cred": 0
+      },
+      "hideouts": ["Pacifica"],
+      "units_available": {
+        "basic_solo": 2,
+        "basic_techie": 2,
+        "basic_netrunner": 2,
+        "drone": 3
+      },
+      "units_reclaim_pool": [],
+      "action_discs_available": ["solo", "techie", "netrun", "wild"],
+      "action_discs_used": [],
+      "edgerunners_owned": [],
+      "upgrades": [],
+      "agenda": null
+    },
+    "maelstrom": {
+      "resources": {
+        "creds": 2,
+        "contraband": 2,
+        "street_cred": 0
+      },
+      "hideouts": ["Watson"],
+      "units_available": {
+        "basic_solo": 2,
+        "basic_techie": 2,
+        "basic_netrunner": 2,
+        "drone": 3
+      },
+      "units_reclaim_pool": [],
+      "action_discs_available": ["solo", "techie", "netrun", "wild"],
+      "action_discs_used": [],
+      "edgerunners_owned": [],
+      "upgrades": [],
+      "agenda": null
+    }
+  },
+  "turn_order": ["tyger_claws", "voodoo_boys", "maelstrom"],
+  "active_player": "tyger_claws"
+}
