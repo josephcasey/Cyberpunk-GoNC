@@ -1,0 +1,41 @@
+{
+  "tyger_claws": {
+    "starting": [
+      { "id": "tc_cc_1", "strength": 3 },
+      { "id": "tc_cc_2", "strength": 2 },
+      { "id": "tc_cc_3", "strength": 2 },
+      { "id": "tc_cc_4", "strength": 1 }
+    ],
+    "upgrades": [
+      { "id": "tc_upg_1", "strength": 4 },
+      { "id": "tc_upg_2", "strength": 5 },
+      { "id": "tc_upg_3", "strength": 6 }
+    ]
+  },
+  "voodoo_boys": {
+    "starting": [
+      { "id": "vb_cc_1", "strength": 3 },
+      { "id": "vb_cc_2", "strength": 2 },
+      { "id": "vb_cc_3", "strength": 2 },
+      { "id": "vb_cc_4", "strength": 1 }
+    ],
+    "upgrades": [
+      { "id": "vb_upg_1", "strength": 4 },
+      { "id": "vb_upg_2", "strength": 5 },
+      { "id": "vb_upg_3", "strength": 6 }
+    ]
+  },
+  "maelstrom": {
+    "starting": [
+      { "id": "ms_cc_1", "strength": 3 },
+      { "id": "ms_cc_2", "strength": 2 },
+      { "id": "ms_cc_3", "strength": 2 },
+      { "id": "ms_cc_4", "strength": 1 }
+    ],
+    "upgrades": [
+      { "id": "ms_upg_1", "strength": 4 },
+      { "id": "ms_upg_2", "strength": 5 },
+      { "id": "ms_upg_3", "strength": 6 }
+    ]
+  }
+}
