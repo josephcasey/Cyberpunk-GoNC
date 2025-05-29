@@ -1,0 +1,58 @@
+[
+  {
+    "step": 1,
+    "netwatch_roll": 4,
+    "color": "yellow",
+    "effect": "Kick all friendly units out of every Data Fortress"
+  },
+  {
+    "step": 2,
+    "color": "yellow",
+    "reward": { "street_cred": 1 }
+  },
+  {
+    "step": 3,
+    "color": "yellow",
+    "effect": "Opponent discards 1 random combat card"
+  },
+  {
+    "step": 4,
+    "netwatch_roll": 5,
+    "color": "orange",
+    "effect": "Sacrifice 1 friendly Netrunner"
+  },
+  {
+    "step": 5,
+    "color": "orange",
+    "effect": "Move 1 opposing unit"
+  },
+  {
+    "step": 6,
+    "color": "orange",
+    "reward": { "street_cred": 1 },
+    "effect": "1 friendly Techie may build up to 2 drones"
+  },
+  {
+    "step": 7,
+    "netwatch_roll": 7,
+    "color": "red",
+    "effect": "Sacrifice all friendly Netrunners"
+  },
+  {
+    "step": 8,
+    "color": "red",
+    "reward": { "street_cred": 1 },
+    "effect": "Kill any 1 unit"
+  },
+  {
+    "step": 9,
+    "color": "red",
+    "reward": { "street_cred": 2 },
+    "effect": "Convert any 1 basic opposing unit"
+  },
+  {
+    "step": 10,
+    "color": "red",
+    "effect": "Reset your Net token at the end of this Netrun"
+  }
+]
