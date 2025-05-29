@@ -1,0 +1,17 @@
+{
+  "tyger_claws": {
+    "hand": ["tc_cc_1", "tc_cc_2", "tc_cc_3", "tc_cc_4"],
+    "used": [],
+    "upgrades": []
+  },
+  "voodoo_boys": {
+    "hand": ["vb_cc_1", "vb_cc_2", "vb_cc_3", "vb_cc_4"],
+    "used": [],
+    "upgrades": []
+  },
+  "maelstrom": {
+    "hand": ["ms_cc_1", "ms_cc_2", "ms_cc_3", "ms_cc_4"],
+    "used": [],
+    "upgrades": []
+  }
+}
