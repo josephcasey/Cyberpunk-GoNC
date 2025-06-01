@@ -41,7 +41,7 @@ def init_session_state():
         st.session_state.districts = {
             "Watson": [(116,39), (887,36), (893,211), (866,254), (721,307), (629,313), (571,473), (516,506), (245,500), (98,353), (98,64), (119,43)],  # Pre-collected
             "Westbrook": [(629,309), (983,312), (985,819), (944,816), (655,645), (634,573), (519,501), (568,473), (632,309), (983,312)],  # Pre-collected
-            "City Center": [],
+            "City Center": [(58,501), (517,501), (629,573), (655,642), (517,814), (483,826), (445,837), (412,837), (378,821), (350,791), (337,742), (69,755), (25,698), (23,540), (56,499)],  # Pre-collected
             "Heywood": [],
             "Pacifica": [],
             "Santo Domingo": []
@@ -61,7 +61,7 @@ with col1:
     current_district = st.selectbox(
         "Select district to map:", 
         ["Watson", "Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo"],
-        index=2  # Start with City Center (next district)
+        index=3  # Start with Heywood (next district)
     )
     
     # Show current progress
