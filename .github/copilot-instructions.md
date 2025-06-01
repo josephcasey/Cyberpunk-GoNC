@@ -12,6 +12,8 @@
     "keep all test code in separate copilot-test directory",
     "do not create new files that supercede existing ones",
     "do not handle any git operations",
+    "ensure you delete any temporary files created & any test files",
+    "avoid sleeping in terminal",
   ],
   "description": "Inject my Claude prompt context"
 }
