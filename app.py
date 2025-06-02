@@ -133,6 +133,7 @@ def draw_units_on_image(image, game_state, gangs, scale_factor):
     draw = ImageDraw.Draw(img_copy)
     
     print(f"\n🎨 DEBUG: draw_units_on_image called with scale_factor={scale_factor}")
+    print(f"🎨 DEBUG: Image mode: {img_copy.mode}, Size: {img_copy.size}")
     
     # Process each district
     units_drawn = 0
@@ -221,13 +222,19 @@ def draw_units_on_image(image, game_state, gangs, scale_factor):
             # Draw units
             for i, pos in enumerate(positions):
                 x, y = pos
-                radius = int(5 * scale_factor)  # Scale radius
+                radius = int(12 * scale_factor)  # Make dots much larger and more visible
                 
                 print(f"        🔵 Drawing unit {i+1} at ({x}, {y}) with radius {radius}")
                 
-                # Draw unit dot
+                # Draw unit dot with very thick white outline for maximum visibility
                 draw.ellipse([x-radius, y-radius, x+radius, y+radius],
-                           fill=gang_color, outline='black', width=1)
+                           fill=gang_color, outline='white', width=int(4 * scale_factor))
+                
+                # Add black inner outline for better contrast
+                inner_radius = radius - int(2 * scale_factor)
+                if inner_radius > 0:
+                    draw.ellipse([x-inner_radius, y-inner_radius, x+inner_radius, y+inner_radius],
+                               fill=gang_color, outline='black', width=int(2 * scale_factor))
                 
                 units_drawn += 1
                 
@@ -235,10 +242,10 @@ def draw_units_on_image(image, game_state, gangs, scale_factor):
                 if i < len(units):
                     unit_type = units[i]
                     if "drone" in unit_type:
-                        # Draw smaller white dot for drones
-                        small_radius = int(2 * scale_factor)
+                        # Draw smaller white dot for drones with thick black outline
+                        small_radius = int(6 * scale_factor)
                         draw.ellipse([x-small_radius, y-small_radius, x+small_radius, y+small_radius], 
-                                   fill='white', outline=gang_color, width=1)
+                                   fill='white', outline='black', width=int(3 * scale_factor))
                         print(f"        ⚪ Added drone indicator")
             
             gang_offset += int(50 * scale_factor)  # Move next gang's units
@@ -357,28 +364,58 @@ with col1:
     # Separate unit visualization area for debugging
     if show_units and game_state and gangs:
         st.subheader("🔍 Gang Unit Debug Visualization")
-        st.write("This area shows if gang units are being generated correctly:")
+        st.write("This area shows gang units overlaid on the actual board image:")
         
-        # Create a simple visualization canvas
-        debug_canvas = Image.new('RGB', (400, 300), 'white')
-        debug_draw = ImageDraw.Draw(debug_canvas)
+        # Use actual board image as debug canvas background
+        if display_img:
+            # Create debug canvas using actual board image at smaller scale
+            debug_scale = 0.4  # Make it smaller for the debug area
+            debug_width = int(display_img.width * debug_scale)
+            debug_height = int(display_img.height * debug_scale)
+            debug_canvas = display_img.resize((debug_width, debug_height), Image.Resampling.LANCZOS)
+            debug_draw = ImageDraw.Draw(debug_canvas)
+            
+            # Add subtle grid overlay for reference
+            grid_color = '#FFFFFF80'  # Semi-transparent white
+            for i in range(0, debug_width, 80):
+                debug_draw.line([(i, 0), (i, debug_height)], fill='lightblue', width=1)
+            for i in range(0, debug_height, 80):
+                debug_draw.line([(0, i), (debug_width, i)], fill='lightblue', width=1)
+        else:
+            # Fallback to simple canvas if image not available
+            debug_canvas = Image.new('RGB', (400, 300), 'white')
+            debug_draw = ImageDraw.Draw(debug_canvas)
+            debug_scale = 1.0
         
-        # Add grid
-        for i in range(0, 400, 50):
-            debug_draw.line([(i, 0), (i, 300)], fill='lightgray', width=1)
-        for i in range(0, 300, 50):
-            debug_draw.line([(0, i), (400, i)], fill='lightgray', width=1)
-        
-        y_offset = 50
         unit_count = 0
         
+        # Now draw gang units on the debug canvas using actual district positions
         for district_name, district_data in game_state['districts'].items():
             if 'units' not in district_data or not district_data['units']:
                 continue
                 
             st.write(f"**{district_name}:**")
             
-            x_offset = 50
+            # Get district center and scale it for debug canvas
+            boundary_key = district_name
+            if boundary_key not in DISTRICT_BOUNDARIES:
+                boundary_key = district_name.title()
+                if boundary_key not in DISTRICT_BOUNDARIES:
+                    boundary_key = district_name.replace('_', ' ').title()
+                    if boundary_key not in DISTRICT_BOUNDARIES:
+                        continue
+            
+            boundaries = DISTRICT_BOUNDARIES[boundary_key]
+            center = get_district_center(district_name, boundaries)
+            
+            if not center:
+                continue
+            
+            # Scale center to debug canvas coordinates
+            debug_center_x = int(center[0] * debug_scale)
+            debug_center_y = int(center[1] * debug_scale)
+            
+            gang_offset = 0
             for gang_id, units in district_data['units'].items():
                 if not units:
                     continue
@@ -409,32 +446,41 @@ with col1:
                 elif not gang_color.startswith('#'):
                     gang_color = '#808080'
                 
-                # Draw units in debug area
-                for i, unit_type in enumerate(units):
-                    x = x_offset + (i * 25)
-                    y = y_offset
-                    
-                    if x < 380:  # Stay within bounds
-                        # Draw unit dot
-                        debug_draw.ellipse([x-8, y-8, x+8, y+8], fill=gang_color, outline='black', width=2)
-                        
-                        # Mark drones differently
-                        if "drone" in unit_type:
-                            debug_draw.ellipse([x-4, y-4, x+4, y+4], fill='white', outline='black', width=1)
-                        
-                        unit_count += 1
+                # Create unit positions around district center (scaled)
+                offset_center = (debug_center_x + gang_offset, debug_center_y)
+                positions = create_unit_positions(offset_center, len(units), spread=int(15 * debug_scale))
                 
-                st.write(f"  • {gang_name}: {len(units)} units ({gang_color})")
-                x_offset += len(units) * 25 + 20
-            
-            y_offset += 50
+                # Draw units on debug canvas
+                for i, unit_type in enumerate(units):
+                    if i < len(positions):
+                        x, y = positions[i]
+                        
+                        # Ensure position is within canvas bounds
+                        if 0 <= x < debug_canvas.width and 0 <= y < debug_canvas.height:
+                            radius = int(6 * debug_scale)  # Slightly larger for visibility
+                            
+                            # Draw unit dot
+                            debug_draw.ellipse([x-radius, y-radius, x+radius, y+radius], 
+                                             fill=gang_color, outline='black', width=2)
+                            
+                            # Mark drones differently
+                            if "drone" in unit_type:
+                                small_radius = int(3 * debug_scale)
+                                debug_draw.ellipse([x-small_radius, y-small_radius, x+small_radius, y+small_radius], 
+                                                 fill='white', outline='black', width=1)
+                            
+                            unit_count += 1
+                
+                st.write(f"  • {gang_name}: {len(units)} units ({gang_color}) at center ({debug_center_x}, {debug_center_y})")
+                gang_offset += int(30 * debug_scale)  # Adjust offset for debug scale
         
-        st.image(debug_canvas, caption=f"Debug: Generated {unit_count} unit dots")
+        st.image(debug_canvas, caption=f"Debug: {unit_count} units overlaid on actual board image (scale: {debug_scale:.1f})")
         
         if unit_count == 0:
             st.warning("⚠️ No units found in game state!")
         else:
-            st.success(f"✅ Successfully generated {unit_count} unit visualizations")
+            st.success(f"✅ Successfully drew {unit_count} units on debug canvas with board background")
+            st.info("👆 This shows the same drawing logic applied to the actual board image. If dots appear here but not on the main map, the issue is with layering/z-order on the main image.")
 
 with col2:
     st.subheader("Detection Results")
