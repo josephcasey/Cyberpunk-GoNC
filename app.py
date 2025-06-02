@@ -1,9 +1,11 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 import json
 from matplotlib.path import Path
 import numpy as np
+import random
+import math
 
 # Import streamlit-image-coordinates
 try:
@@ -48,6 +50,24 @@ def load_image():
         st.error(f"Error loading image: {e}")
         return None, None, 1.0
 
+# Load game data
+@st.cache_data
+def load_game_data():
+    """Load game state and gang data"""
+    try:
+        # Load game state
+        with open('game_state.json', 'r') as f:
+            game_state = json.load(f)
+        
+        # Load gang data
+        with open('gangs.json', 'r') as f:
+            gangs = json.load(f)
+        
+        return game_state, gangs
+    except Exception as e:
+        st.error(f"Error loading game data: {e}")
+        return None, None
+
 def point_in_polygon(point, polygon):
     """Check if a point is inside a polygon using matplotlib's Path.contains_point"""
     try:
@@ -68,27 +88,194 @@ def detect_district(x, y):
     
     return None  # No district found
 
+def get_district_center(district_name, boundaries):
+    """Calculate the center point of a district for unit placement"""
+    if not boundaries:
+        return None
+    
+    # Calculate centroid of the polygon
+    x_coords = [point[0] for point in boundaries]
+    y_coords = [point[1] for point in boundaries]
+    
+    center_x = sum(x_coords) / len(x_coords)
+    center_y = sum(y_coords) / len(y_coords)
+    
+    return (int(center_x), int(center_y))
+
+def create_unit_positions(center, unit_count, spread=30):
+    """Create positions for units around the district center"""
+    if not center or unit_count == 0:
+        return []
+    
+    positions = []
+    center_x, center_y = center
+    
+    if unit_count == 1:
+        positions.append((center_x, center_y))
+    else:
+        # Arrange units in a circle around the center
+        for i in range(unit_count):
+            angle = (2 * math.pi * i) / unit_count
+            offset_x = int(spread * math.cos(angle))
+            offset_y = int(spread * math.sin(angle))
+            
+            pos_x = center_x + offset_x
+            pos_y = center_y + offset_y
+            positions.append((pos_x, pos_y))
+    
+    return positions
+
+def draw_units_on_image(image, game_state, gangs, scale_factor):
+    """Draw gang units as colored dots on the image"""
+    # Create a copy of the image to draw on
+    img_copy = image.copy()
+    draw = ImageDraw.Draw(img_copy)
+    
+    print(f"\n🎨 DEBUG: draw_units_on_image called with scale_factor={scale_factor}")
+    
+    # Process each district
+    units_drawn = 0
+    for district_name, district_data in game_state['districts'].items():
+        print(f"  📍 Processing district: {district_name}")
+        
+        if 'units' not in district_data or not district_data['units']:
+            print(f"    ❌ No units in {district_name}")
+            continue
+            
+        print(f"    ✅ Units found in {district_name}: {district_data['units']}")
+        
+        # Map district names (handle case differences)
+        boundary_key = district_name
+        if boundary_key not in DISTRICT_BOUNDARIES:
+            # Try title case
+            boundary_key = district_name.title()
+            if boundary_key not in DISTRICT_BOUNDARIES:
+                # Try with space handling
+                boundary_key = district_name.replace('_', ' ').title()
+                if boundary_key not in DISTRICT_BOUNDARIES:
+                    print(f"    ❌ No boundary found for {district_name}")
+                    continue
+        
+        print(f"    🗺️ Using boundary key: {boundary_key}")
+        
+        # Get district center
+        boundaries = DISTRICT_BOUNDARIES[boundary_key]
+        center = get_district_center(district_name, boundaries)
+        
+        if not center:
+            print(f"    ❌ Could not calculate center for {district_name}")
+            continue
+        
+        print(f"    📍 District center: {center}")
+        
+        # Scale center to display coordinates
+        display_center = (int(center[0] * scale_factor), int(center[1] * scale_factor))
+        print(f"    📍 Display center: {display_center}")
+        
+        # Process units for each gang in this district
+        gang_offset = 0
+        for gang_id, units in district_data['units'].items():
+            if not units:
+                continue
+                
+            print(f"      🎭 Processing gang {gang_id} with {len(units)} units")
+                
+            # Get gang color
+            gang_name = None
+            gang_color = "gray"  # Default color
+            
+            # Find gang name and color
+            for name, data in gangs.items():
+                if data.get('id') == gang_id:
+                    gang_name = name
+                    gang_color = data.get('color', 'gray')
+                    break
+            
+            # Convert color names to RGB-like values for PIL
+            color_map = {
+                'red': '#FF0000',
+                'lime': '#00FF00', 
+                'blue': '#0000FF',
+                'pink': '#FF69B4',
+                'purple': '#800080',
+                'cyan': '#00FFFF',
+                'yellow': '#FFFF00',
+                'gray': '#808080'
+            }
+            
+            if gang_color in color_map:
+                gang_color = color_map[gang_color]
+            elif not gang_color.startswith('#'):
+                gang_color = '#808080'  # Default gray
+            
+            # Create unit positions
+            unit_count = len(units)
+            
+            # Offset each gang's units to avoid overlap
+            offset_center = (display_center[0] + gang_offset, display_center[1])
+            positions = create_unit_positions(offset_center, unit_count, spread=int(20 * scale_factor))
+            
+            print(f"      🎨 Drawing {len(positions)} units at positions: {positions}")
+            
+            # Draw units
+            for i, pos in enumerate(positions):
+                x, y = pos
+                radius = int(5 * scale_factor)  # Scale radius
+                
+                print(f"        🔵 Drawing unit {i+1} at ({x}, {y}) with radius {radius}")
+                
+                # Draw unit dot
+                draw.ellipse([x-radius, y-radius, x+radius, y+radius],
+                           fill=gang_color, outline='black', width=1)
+                
+                units_drawn += 1
+                
+                # Optional: Add unit type indicator (different sizes/shapes)
+                if i < len(units):
+                    unit_type = units[i]
+                    if "drone" in unit_type:
+                        # Draw smaller white dot for drones
+                        small_radius = int(2 * scale_factor)
+                        draw.ellipse([x-small_radius, y-small_radius, x+small_radius, y+small_radius], 
+                                   fill='white', outline=gang_color, width=1)
+                        print(f"        ⚪ Added drone indicator")
+            
+            gang_offset += int(50 * scale_factor)  # Move next gang's units
+    
+    print(f"🎨 DEBUG: Total units drawn: {units_drawn}")
+    return img_copy
+
 # Initialize session state
 if 'click_history' not in st.session_state:
     st.session_state.click_history = []
 
 # UI
-st.title("🗺️ Night City: District Click Detection Test")
+st.title("🗺️ Night City: Interactive Gang Territory Map")
 
 col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("Interactive District Map")
     
-    # Load image
+    # Load image and game data
     display_img, original_size, scale_factor = load_image()
+    game_state, gangs = load_game_data()
+    
+    # Unit visualization toggle
+    show_units = st.checkbox("🎯 Show Gang Units", value=True, help="Display gang units as colored dots on the map")
     
     if display_img and HAS_IMAGE_COORDS:
-        st.info("👆 Click anywhere on the map to detect which district you clicked!")
+        # Apply unit visualization if enabled
+        final_img = display_img
+        if show_units and game_state and gangs:
+            final_img = draw_units_on_image(display_img, game_state, gangs, scale_factor)
+            st.info("👆 Click anywhere on the map to detect districts! Colored dots show gang units.")
+        else:
+            st.info("👆 Click anywhere on the map to detect which district you clicked!")
         
         # Get click coordinates
         clicked_coords = streamlit_image_coordinates(
-            display_img, 
+            final_img, 
             key="district_detection"
         )
         
@@ -111,6 +298,32 @@ with col1:
             if detected_district:
                 st.success(f"🎯 **{detected_district}** detected!")
                 st.write(f"📍 Click coordinates: ({orig_x}, {orig_y})")
+                
+                # Show gang information for this district
+                if game_state and gangs and detected_district in game_state['districts']:
+                    district_data = game_state['districts'][detected_district]
+                    if 'units' in district_data and district_data['units']:
+                        st.write("**Active Gangs in this District:**")
+                        for gang_id, units in district_data['units'].items():
+                            if units:
+                                # Find gang info
+                                gang_name = None
+                                for name, data in gangs.items():
+                                    if data.get('id') == gang_id:
+                                        gang_name = name
+                                        break
+                                if gang_name:
+                                    st.write(f"• {gang_name}: {len(units)} units")
+                    
+                    # Show district status
+                    if 'dominant' in district_data and district_data['dominant']:
+                        dom_gang = None
+                        for name, data in gangs.items():
+                            if data.get('id') == district_data['dominant']:
+                                dom_gang = name
+                                break
+                        if dom_gang:
+                            st.write(f"🏴 **Dominant Gang:** {dom_gang}")
                 
                 # Add to history
                 click_record = {
@@ -140,8 +353,148 @@ with col1:
     else:
         st.error("Could not load image")
 
+    # Separate unit visualization area for debugging
+    if show_units and game_state and gangs:
+        st.subheader("🔍 Gang Unit Debug Visualization")
+        st.write("This area shows if gang units are being generated correctly:")
+        
+        # Create a simple visualization canvas
+        debug_canvas = Image.new('RGB', (400, 300), 'white')
+        debug_draw = ImageDraw.Draw(debug_canvas)
+        
+        # Add grid
+        for i in range(0, 400, 50):
+            debug_draw.line([(i, 0), (i, 300)], fill='lightgray', width=1)
+        for i in range(0, 300, 50):
+            debug_draw.line([(0, i), (400, i)], fill='lightgray', width=1)
+        
+        y_offset = 50
+        unit_count = 0
+        
+        for district_name, district_data in game_state['districts'].items():
+            if 'units' not in district_data or not district_data['units']:
+                continue
+                
+            st.write(f"**{district_name}:**")
+            
+            x_offset = 50
+            for gang_id, units in district_data['units'].items():
+                if not units:
+                    continue
+                    
+                # Get gang info
+                gang_name = None
+                gang_color = "gray"
+                for name, data in gangs.items():
+                    if data.get('id') == gang_id:
+                        gang_name = name
+                        gang_color = data.get('color', 'gray')
+                        break
+                
+                # Convert color
+                color_map = {
+                    'red': '#FF0000',
+                    'lime': '#00FF00', 
+                    'blue': '#0000FF',
+                    'pink': '#FF69B4',
+                    'purple': '#800080',
+                    'cyan': '#00FFFF',
+                    'yellow': '#FFFF00',
+                    'gray': '#808080'
+                }
+                
+                if gang_color in color_map:
+                    gang_color = color_map[gang_color]
+                elif not gang_color.startswith('#'):
+                    gang_color = '#808080'
+                
+                # Draw units in debug area
+                for i, unit_type in enumerate(units):
+                    x = x_offset + (i * 25)
+                    y = y_offset
+                    
+                    if x < 380:  # Stay within bounds
+                        # Draw unit dot
+                        debug_draw.ellipse([x-8, y-8, x+8, y+8], fill=gang_color, outline='black', width=2)
+                        
+                        # Mark drones differently
+                        if "drone" in unit_type:
+                            debug_draw.ellipse([x-4, y-4, x+4, y+4], fill='white', outline='black', width=1)
+                        
+                        unit_count += 1
+                
+                st.write(f"  • {gang_name}: {len(units)} units ({gang_color})")
+                x_offset += len(units) * 25 + 20
+            
+            y_offset += 50
+        
+        st.image(debug_canvas, caption=f"Debug: Generated {unit_count} unit dots")
+        
+        if unit_count == 0:
+            st.warning("⚠️ No units found in game state!")
+        else:
+            st.success(f"✅ Successfully generated {unit_count} unit visualizations")
+
 with col2:
     st.subheader("Detection Results")
+    
+    # Show unit information if available
+    game_state, gangs = load_game_data()
+    if game_state and gangs:
+        st.subheader("🎯 Gang Units Overview")
+        
+        # Gang legend
+        st.write("**Gang Colors:**")
+        active_gangs = set()
+        for district_data in game_state['districts'].values():
+            if 'units' in district_data:
+                active_gangs.update(district_data['units'].keys())
+        
+        for gang_id in active_gangs:
+            for name, data in gangs.items():
+                if data.get('id') == gang_id:
+                    color = data.get('color', 'gray')
+                    # Create a simple color indicator
+                    color_emoji = {
+                        'red': '🔴',
+                        'lime': '🟢', 
+                        'blue': '🔵',
+                        'pink': '🩷',
+                        'purple': '🟣',
+                        'cyan': '🔵',
+                        'yellow': '🟡',
+                        'gray': '⚫'
+                    }
+                    emoji = color_emoji.get(color, '⚫')
+                    st.write(f"  {emoji} **{name}**")
+                    break
+        
+        st.write("**District Units:**")
+        for district_name, district_data in game_state['districts'].items():
+            if 'units' in district_data and district_data['units']:
+                st.write(f"**{district_name}:**")
+                for gang_id, units in district_data['units'].items():
+                    if units:
+                        # Find gang info
+                        gang_name = None
+                        gang_color = "gray"
+                        for name, data in gangs.items():
+                            if data.get('id') == gang_id:
+                                gang_name = name
+                                gang_color = data.get('color', 'gray')
+                                break
+                        
+                        if gang_name:
+                            st.write(f"  • {gang_name} ({len(units)} units)")
+                            # Show unit types
+                            unit_types = {}
+                            for unit in units:
+                                unit_types[unit] = unit_types.get(unit, 0) + 1
+                            for unit_type, count in unit_types.items():
+                                st.write(f"    - {unit_type}: {count}")
+                        else:
+                            st.write(f"  • {gang_id} ({len(units)} units)")
+        st.divider()
     
     # Show district information
     st.write("**Available Districts:**")
@@ -176,7 +529,7 @@ with col2:
             st.rerun()
 
 # District statistics
-st.subheader("📊 District Statistics")
+st.subheader("📊 Game Statistics")
 
 col1, col2, col3 = st.columns(3)
 
@@ -192,7 +545,7 @@ with col2:
             district = click["district"]
             district_clicks[district] = district_clicks.get(district, 0) + 1
         
-        most_clicked = max(district_clicks, key=district_clicks.get) if district_clicks else "None"
+        most_clicked = max(district_clicks.keys(), key=lambda k: district_clicks[k]) if district_clicks else "None"
         st.metric("Most Clicked District", most_clicked)
         st.metric("Total Clicks", len(st.session_state.click_history))
     else:
@@ -200,12 +553,42 @@ with col2:
         st.metric("Total Clicks", 0)
 
 with col3:
-    # Show boundary info for largest/smallest districts
-    largest_district = max(DISTRICT_BOUNDARIES, key=lambda d: len(DISTRICT_BOUNDARIES[d]))
-    smallest_district = min(DISTRICT_BOUNDARIES, key=lambda d: len(DISTRICT_BOUNDARIES[d]))
+    # Show game round and phase info
+    if game_state:
+        st.metric("Game Round", game_state.get('round', 'Unknown'))
+        st.metric("Current Phase", game_state.get('phase', 'Unknown').title())
+    else:
+        st.metric("Game Round", "N/A")
+        st.metric("Current Phase", "N/A")
+
+# Gang territory summary
+if game_state and gangs:
+    st.subheader("🏴 Territory Control")
     
-    st.metric("Most Complex District", largest_district)
-    st.metric("Simplest District", smallest_district)
+    gang_territories = {}
+    total_units = 0
+    
+    for district_name, district_data in game_state['districts'].items():
+        if 'units' in district_data:
+            for gang_id, units in district_data['units'].items():
+                if units:
+                    gang_name = None
+                    for name, data in gangs.items():
+                        if data.get('id') == gang_id:
+                            gang_name = name
+                            break
+                    
+                    if gang_name:
+                        if gang_name not in gang_territories:
+                            gang_territories[gang_name] = []
+                        gang_territories[gang_name].append(f"{district_name} ({len(units)} units)")
+                        total_units += len(units)
+    
+    if gang_territories:
+        for gang_name, territories in gang_territories.items():
+            st.write(f"**{gang_name}:** {', '.join(territories)}")
+        
+        st.write(f"**Total Units on Board:** {total_units}")
 
 # Export functionality
 if st.button("Export All Data to Terminal"):
@@ -230,21 +613,34 @@ if st.button("Export All Data to Terminal"):
     st.success("Full data exported to terminal!")
 
 # Instructions
-with st.expander("ℹ️ How District Detection Works"):
+with st.expander("ℹ️ How to Use This Interface"):
     st.write("""
-    **Point-in-Polygon Algorithm:**
-    1. Each district is defined by a polygon made from boundary coordinates
-    2. When you click, the algorithm checks if your click point is inside any district polygon
-    3. Uses matplotlib's Path.contains_point() for accurate detection
-    4. Returns the first matching district (districts shouldn't overlap)
+    **Gang Unit Visualization:**
+    - Colored dots represent gang units positioned in each district
+    - Each gang has a unique color (see legend in the sidebar)
+    - Units are clustered around district centers
+    - Drones appear as smaller white dots inside the gang color
+    - Toggle "Show Gang Units" to hide/show unit visualization
     
-    **Coordinate System:**
-    - Uses original image coordinates (not display coordinates)
-    - Automatically scales from display clicks to original image coordinates
-    - All boundary coordinates are in original image space
+    **District Detection:**
+    - Click anywhere on the map to detect which district you clicked
+    - Uses point-in-polygon algorithm for accurate detection
+    - Shows active gangs and dominant faction for clicked districts
+    - All detection uses original image coordinates for precision
     
-    **Testing:**
-    - Click anywhere on the map to test detection
-    - Use manual coordinate entry to test specific points
-    - Check click history to see detection accuracy
+    **Game Information:**
+    - Current game state shows round and phase information
+    - Territory control summary shows which gangs control which districts
+    - Unit counts and types are displayed for each active gang
+    
+    **Technical Details:**
+    - District boundaries defined by collected coordinate polygons
+    - Automatic coordinate scaling from display to original image size
+    - Uses matplotlib's Path.contains_point() for polygon detection
+    - Real-time click history tracking with duplicate prevention
     """)
+    
+    st.write("**Unit Type Legend:**")
+    st.write("• **Large colored dots:** Basic gang units (solo, techie, netrunner)")
+    st.write("• **Small white dots:** Drone units")
+    st.write("• **Gang colors:** As shown in the sidebar legend")

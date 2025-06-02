@@ -1,6 +1,7 @@
 {
   "Maelstrom": {
     "id": "maelstrom",
+    "color": "red",
     "starting_district": "watson",
     "ability_title": "Well-Armed",
     "passive_ability": "Look at 1 extra Combat card when Upgrading. You still keep a single card.",
@@ -8,6 +9,7 @@
   },
   "Tyger Claws": {
     "id": "tyger_claws",
+    "color": "lime",
     "starting_district": "westbrook",
     "ability_title": "Revenge",
     "passive_ability": "When you lose a basic unit in a Firefight, choose an involved Opponent to keep that unit near their reserve as a Revenge token.",
@@ -15,6 +17,7 @@
   },
   "Scavengers": {
     "id": "scavengers",
+    "color": "#42A9EE",
     "ability_title": "Hidden in Plain Sight",
     "passive_ability": "When you hire an Edgerunner or buy a Vehicle, you may place them in any District of your choice.",
     "special_rule": "When seizing an Opportunity, reveal a Scavenger Opportunity card and apply its effect to every other player, then remove it from the game."
@@ -22,6 +25,7 @@
   "The Mox": {
     "id": "the_mox",
     "starting_district": "watson",
+    "color": "pink",
     "ability_title": "Improving Lizzie’s Bar",
     "passive_ability": "When performing a Build Hideout action, place the token on a dashboard slot to unlock the corresponding effect.",
     "unlocks": {
@@ -32,6 +36,7 @@
   },
   "Voodoo Boys": {
     "id": "voodoo_boys",
+    "color": "purple",
     "starting_district": "pacifica",
     "ability_title": "Netwatch Countermeasures",
     "passive_ability": "Once per Netrun, you may reroll both dice if you fail the NetWatch roll.",
@@ -39,6 +44,7 @@
   },
   "Aldecaldos": {
     "id": "aldecaldos",
+    "color": "#CC7A49",
     "starting_district": "badlands",
     "ability_title": "Clan Family",
     "passive_ability": "Gain rewards during RECLAIM based on how many non-Drone units you have in play.",
@@ -51,6 +57,7 @@
   },
   "Animals": {
     "id": "animals",
+    "color":"#F9701E",
     "starting_district": "pacifica",
     "ability_title": "Bodyguard Side Gig",
     "passive_ability": "Gain 1 Cred when using your yellow Action disc.",
@@ -58,6 +65,7 @@
   },
   "Wraiths": {
     "id": "wraiths",
+    "color": "cyan",
     "starting_district": "badlands",
     "ability_title": "Raids",
     "passive_ability": "If you have at least 1 unit left in a district after a Firefight you initiated, place a RAIDED token on that district’s reward.",
@@ -65,6 +73,7 @@
   },
   "6th Street": {
     "id": "sixth_street",
+    "color": "blue",
     "starting_district": "santo_domingo",
     "ability_title": "Patriotic Patrol",
     "passive_ability": "At the end of your ACTIVATE, you may place Patrol tokens in any number of districts with your Presence (1 per district).",
@@ -72,6 +81,7 @@
   },
   "Valentinos": {
     "id": "valentinos",
+    "color": "yellow",
     "starting_district": "heywood",
     "ability_title": "Community Support",
     "passive_ability": "If you control a Business, at the end of your ACTIVATE (before market refill), you may sacrifice a Drone to:",
