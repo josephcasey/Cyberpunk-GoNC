@@ -215,26 +215,26 @@ def draw_units_on_image(image, game_state, gangs, scale_factor):
             
             # Offset each gang's units to avoid overlap
             offset_center = (display_center[0] + gang_offset, display_center[1])
-            positions = create_unit_positions(offset_center, unit_count, spread=int(20 * scale_factor))
+            positions = create_unit_positions(offset_center, unit_count, spread=int(60 * scale_factor))
             
             print(f"      🎨 Drawing {len(positions)} units at positions: {positions}")
             
             # Draw units
             for i, pos in enumerate(positions):
                 x, y = pos
-                radius = int(12 * scale_factor)  # Make dots much larger and more visible
+                radius = int(40 * scale_factor)  # Make dots much larger like the circles in the image
                 
                 print(f"        🔵 Drawing unit {i+1} at ({x}, {y}) with radius {radius}")
                 
                 # Draw unit dot with very thick white outline for maximum visibility
                 draw.ellipse([x-radius, y-radius, x+radius, y+radius],
-                           fill=gang_color, outline='white', width=int(4 * scale_factor))
+                           fill=gang_color, outline='white', width=int(5 * scale_factor))
                 
                 # Add black inner outline for better contrast
-                inner_radius = radius - int(2 * scale_factor)
+                inner_radius = radius - int(3 * scale_factor)
                 if inner_radius > 0:
                     draw.ellipse([x-inner_radius, y-inner_radius, x+inner_radius, y+inner_radius],
-                               fill=gang_color, outline='black', width=int(2 * scale_factor))
+                               fill=gang_color, outline='black', width=int(3 * scale_factor))
                 
                 units_drawn += 1
                 
@@ -243,12 +243,12 @@ def draw_units_on_image(image, game_state, gangs, scale_factor):
                     unit_type = units[i]
                     if "drone" in unit_type:
                         # Draw smaller white dot for drones with thick black outline
-                        small_radius = int(6 * scale_factor)
+                        small_radius = int(12 * scale_factor)
                         draw.ellipse([x-small_radius, y-small_radius, x+small_radius, y+small_radius], 
-                                   fill='white', outline='black', width=int(3 * scale_factor))
+                                   fill='white', outline='black', width=int(4 * scale_factor))
                         print(f"        ⚪ Added drone indicator")
             
-            gang_offset += int(50 * scale_factor)  # Move next gang's units
+            gang_offset += int(150 * scale_factor)  # Move next gang's units
     
     print(f"🎨 DEBUG: Total units drawn: {units_drawn}")
     return img_copy
@@ -448,7 +448,7 @@ with col1:
                 
                 # Create unit positions around district center (scaled)
                 offset_center = (debug_center_x + gang_offset, debug_center_y)
-                positions = create_unit_positions(offset_center, len(units), spread=int(15 * debug_scale))
+                positions = create_unit_positions(offset_center, len(units), spread=int(40 * debug_scale))
                 
                 # Draw units on debug canvas
                 for i, unit_type in enumerate(units):
@@ -472,7 +472,7 @@ with col1:
                             unit_count += 1
                 
                 st.write(f"  • {gang_name}: {len(units)} units ({gang_color}) at center ({debug_center_x}, {debug_center_y})")
-                gang_offset += int(30 * debug_scale)  # Adjust offset for debug scale
+                gang_offset += int(60 * debug_scale)  # Adjust offset for debug scale
         
         st.image(debug_canvas, caption=f"Debug: {unit_count} units overlaid on actual board image (scale: {debug_scale:.1f})")
         
